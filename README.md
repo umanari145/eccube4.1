@@ -1,75 +1,131 @@
-# EC-CUBE 4.1
+# EC-CUBE4のカスタマイズなど
 
-[![Unit test for EC-CUBE](https://github.com/EC-CUBE/ec-cube/actions/workflows/unit-test.yml/badge.svg?branch=4.1)](https://github.com/EC-CUBE/ec-cube/actions/workflows/unit-test.yml)
-[![E2E test for EC-CUBE](https://github.com/EC-CUBE/ec-cube/actions/workflows/e2e-test.yml/badge.svg?branch=4.1)](https://github.com/EC-CUBE/ec-cube/actions/workflows/e2e-test.yml)
-[![Plugin test for EC-CUBE](https://github.com/EC-CUBE/ec-cube/actions/workflows/plugin-test.yml/badge.svg?branch=4.1)](https://github.com/EC-CUBE/ec-cube/actions/workflows/plugin-test.yml)
-[![PHPStan](https://github.com/EC-CUBE/ec-cube/actions/workflows/phpstan.yml/badge.svg?branch=4.1)](https://github.com/EC-CUBE/ec-cube/actions/workflows/phpstan.yml)
-[![codecov](https://codecov.io/gh/EC-CUBE/ec-cube/branch/4.1/graph/badge.svg?token=BhnPjjvfwd)](https://codecov.io/gh/EC-CUBE/ec-cube)
+### 環境構築
+```
+#mysql実行
+docker-compose -f docker-compose.mysql.yml up -d
 
-[![Slack](https://img.shields.io/badge/slack-join%5fchat-brightgreen.svg?style=flat)](https://join.slack.com/t/ec-cube/shared_invite/enQtNDA1MDYzNDQxMTIzLTY5MTRhOGQ2MmZhMjQxYTAwMmVlMDc5MDU2NjJlZmFiM2E3M2Q0M2Y3OTRlMGY4NTQzN2JiZDBkNmQwNTUzYzc)
+#postgres
+docker-compose -f docker-compose.pgsql.yml up -d
+postgresの場合、PSquelのようなツールからは
+Authentication method 10 not supported
+のようなデータがで設定ファイルの修正をしないと意味がない
 
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy)
+```
+db
+```
+#コンテナのなかに入って以下を実行
+#databaseはdockerのなかですでに作成されている模様
 
-**4.0からの更新内容は[リリースノート](https://github.com/EC-CUBE/ec-cube/releases/tag/4.1.0)をご確認ください。**
+#schema作成
+php bin/console doctrine:schema:create
 
-+ 本ドキュメントはEC-CUBEの開発者を主要な対象者としております。
-+ パッケージ版は[EC-CUBEオフィシャルサイト](https://www.ec-cube.net)で配布しています。
-+ カスタマイズやEC-CUBEの利用、仕様に関しては[開発コミュニティ](https://xoops.ec-cube.net)をご利用ください。
-+ 本体開発にあたって不明点などあれば[Issue](https://github.com/EC-CUBE/ec-cube/wiki/Issues%E3%81%AE%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95)をご利用下さい。
-+ EC-CUBE 3系の保守については、 [EC-CUBE/ec-cube3](https://github.com/EC-CUBE/ec-cube3/)にて開発を行っております。
-+ EC-CUBE 2系の保守については、 [EC-CUBE/ec-cube2](https://github.com/EC-CUBE/ec-cube2/)にて開発を行っております。
+#データロード
+php bin/console eccube:fixtures:load
 
-## インストール
-
-### EC-CUBE 4.1のインストール方法
-
-開発ドキュメントの [インストール方法](https://doc4.ec-cube.net/quickstart/install) の手順に従ってインストールしてください。
-
-### CSS の編集・ビルド方法
-
-[Sass](https://sass-lang.com) を使用して記述されています。
-Sass のソースコードは `html/template/{admin,default}/assets/scss` にあります。
-前提として [https://nodejs.org/ja/] より、 Node.js をインストールしておいてください。
-
-以下のコマンドでビルドすることで、 `html/template/**/assets/css` に CSS ファイルが出力されます。
-
-```shell
-npm ci # 初回およびpackage-lock.jsonに変更があったとき
-npm run build # Sass のビルド
+#migration
+php bin/console doctrine:migrations:migrate
 ```
 
-### 動作確認環境
+## remote-Desktop
 
-* Apache 2.4.x (mod_rewrite / mod_ssl 必須)
-* PHP 7.3.x / 7.4.x
-* PostgreSQL 10.x / MySQL 5.7.x
-* ブラウザー：Google Chrome
+コンテナ内に接続する方法
+(基本的には)
+Docker起動後、左下の><のアイコンをクリックし、「Remote-Containers Open Foloder・・・」をクリック。
 
-詳しくは開発ドキュメントの [システム要件](https://doc4.ec-cube.net/quickstart/requirement) をご確認ください。
-
-## ドキュメント
-
-### [EC-CUBE 4.x 開発ドキュメント@doc4.ec-cube.net](https://doc4.ec-cube.net/)
+参考URL
+https://tech-lab.sios.jp/archives/18677
 
 
-EC-CUBE 4.x 系の仕様や手順、開発Tipsに関するドキュメントを掲載しています。
-修正や追記、新規ドキュメントの作成をいただく場合、以下のレポジトリからPullRequestをお送りください。
-[https://github.com/EC-CUBE/doc4.ec-cube.net](https://github.com/EC-CUBE/doc4.ec-cube.net)
+## 主なファイル構成
 
-## 開発への参加
+- `src/Eccube/Controller` いわゆるController
+- `src/Eccube/Form` Formで受け取ったあたいの制御
+- `src/Eccube/Form/Type` 実際のFormの個別のパラメーターの制御など プラダウン値の作成など
+- `src/Repository` いわゆるRepository(SQLの作成など)
+- `src/Entity` テーブルのオブジェクト化(ほぼテーブルと1:1)
+- `src/Resource/template` テンプレート(Twig)
+- `src/Service` サービス(主に複数画面をまたぐビジネスロジック)
+- `html/template` css,jsなどのリソース系ファイル置き場
 
-EC-CUBE 4.1の不具合の修正、機能のブラッシュアップを目的として、継続的に開発を行っております。  
-コードのリファクタリング、不具合修正以外のPullRequestを送る際は、Pull Requestのコメントなどに意図を明確に記載してください。  
+## ルーティング && URL
 
-Pull Requestの送信前に、Issueにて提議いただく事も可能です。
-Issuesの利用方法については、[こちら](https://github.com/EC-CUBE/ec-cube/wiki/Issues%E3%81%AE%E5%88%A9%E7%94%A8%E6%96%B9%E6%B3%95)をご確認ください。
+- 管理画面はdefaultでは`http://example.com/admin`で、admin部分を任意に変更。(現在は`http://example.com/eccube_admin_dayo/`)
+- 独自にルーティングを管理する場所はない
+- Controller内の@Routeで管理→おそらくSynfonyの仕様
+- `src/Controller`内にHogeControllerなどと書いて任意のメソッドに@Route(〜)で動く
 
-[Slack](https://join.slack.com/t/ec-cube/shared_invite/enQtNDA1MDYzNDQxMTIzLTY5MTRhOGQ2MmZhMjQxYTAwMmVlMDc5MDU2NjJlZmFiM2E3M2Q0M2Y3OTRlMGY4NTQzN2JiZDBkNmQwNTUzYzc)でも本体の開発に関する意見交換などを行っております。
+## 追加のクラス
+
+- 独自に追加するControllerやEntityは`app/Customize`直下に作成する。
+例 `app/Customize/Controller/HogeController`など
 
 
+## 検索系大まかなロジック(商品検索を例に)
+- formFactoryで検索ロジックを全て制御する
+- ベースのロジックは内部で制御。個別に書くのはparameterの設定のみ
+- formからsearch用のオブジェクトを取り出し、ProductRepositoryに渡す
+- ProductRepositoryでSQL作成 ORMapper,QueryBuilderはDoctrineを使用
+- 検索したオブジェクトをpagerに渡す。
+- 商品自体は商品企画に基づいているのでproduct_idを取得後,product_classから引っ張る
+- ソート後、オブジェクトごとviewに渡す
 
-### コピーライトポリシーへの同意
+## view側の値のヘルパー処理など
 
-コードの提供・追加、修正・変更その他「EC-CUBE」への開発の御協力（Issue投稿、Pull Request投稿など、GitHub上での活動）を行っていただく場合には、
-[EC-CUBEのコピーライトポリシー](https://github.com/EC-CUBE/ec-cube/wiki/EC-CUBE%E3%81%AE%E3%82%B3%E3%83%94%E3%83%BC%E3%83%A9%E3%82%A4%E3%83%88%E3%83%9D%E3%83%AA%E3%82%B7%E3%83%BC)をご理解いただき、ご了承いただく必要がございます。
-Issueの投稿やPull Requestを送信する際は、EC-CUBEのコピーライトポリシーに同意したものとみなします。
+ - `src/Eccube/Form/Type`で制御
+
+参考リンク https://qiita.com/yutachaos/items/0ae0d1797db4cb16466c
+
+プルダウン例
+```
+'choice_label' => 'NameWithLevel',
+'label' => 'admin.product.category',
+'placeholder' => 'common.select__all_products',
+'required' => false,
+'multiple' => false,
+'expanded' => false,
+'choices' => $this->categoryRepository->getList(null, true),
+'choice_value' => function (Category $Category = null) {
+    return $Category ? $Category->getId() : null;
+},
+
+```
+
+チェックボックス例
+
+```
+->add('status', ProductStatusType::class, [
+    'label' => 'admin.product.display_status',
+    'multiple' => true,
+    'required' => false,
+    'expanded' => true,
+    'data' => $this->productStatusRepository->findBy(['id' => [
+        ProductStatus::DISPLAY_SHOW,
+        ProductStatus::DISPLAY_HIDE,
+    ]]),
+])
+->add('stock', ChoiceType::class, [
+    'label' => 'admin.product.stock',
+    'choices' => [
+        'admin.product.stock__in_stock' => ProductStock::IN_STOCK,
+        'admin.product.stock__out_of_stock' => ProductStock::OUT_OF_STOCK,
+    ],
+    'expanded' => true,
+    'multiple' => true,
+])
+
+```
+
+
+### Service
+
+複数プロセスで使用するビジネスロジック(WMSでいう在庫系など)
+他 共通系の汎用的な処理も
+
+例
+- Cart カートのさらに細分化されたビジネスロジック
+- PurchaseFlow 購入フローの細分化されたビジネスロジック
+- CartService カート系
+- CsvImportService CSV系
+- MailService メール送信系
+- PointHelper ポイント

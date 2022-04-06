@@ -1,7 +1,7 @@
 {
     "name": "eccube",
     "dockerComposeFile": [
-        "../docker-compose.yml"
+        "../docker-compose.mysql.yml"
     ],
     "service": "ec-cube",
     "workspaceFolder": "/var/www/html",
