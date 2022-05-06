@@ -22,6 +22,9 @@ php bin/console doctrine:schema:create
 
 #データロード
 php bin/console eccube:fixtures:load
+```
+src\Eccube\Resource\doctrice\import_csv\ja\以下のcsvデータが入る
+```
 
 #migration
 php bin/console doctrine:migrations:migrate
@@ -50,7 +53,7 @@ https://tech-lab.sios.jp/archives/18677
 
 ## ルーティング && URL
 
-- 管理画面はdefaultでは`http://example.com/admin`で、admin部分を任意に変更。(現在は`http://example.com/eccube_admin_dayo/`)
+- 管理画面はdefaultでは`http://example.com/admin`で、admin部分を任意に変更。
 - 独自にルーティングを管理する場所はない
 - Controller内の@Routeで管理→おそらくSynfonyの仕様
 - `src/Controller`内にHogeControllerなどと書いて任意のメソッドに@Route(〜)で動く

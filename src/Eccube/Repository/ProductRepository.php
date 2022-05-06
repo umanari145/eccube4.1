@@ -114,7 +114,8 @@ class ProductRepository extends AbstractRepository
             ->innerJoin('p.ProductClasses', 'pc')
             // XXX Joined 'TaxRule' and 'ProductStock' to prevent lazy loading
             ->leftJoin('pc.TaxRule', 'tr')
-            ->innerJoin('pc.ProductStock', 'ps')
+            // unlimitedの場合もあるのでleftjoinで
+            ->leftJoin('pc.ProductStock', 'ps')
             ->leftJoin('pc.ClassCategory1', 'cc1')
             ->leftJoin('pc.ClassCategory2', 'cc2')
             ->leftJoin('p.ProductImage', 'pi')
