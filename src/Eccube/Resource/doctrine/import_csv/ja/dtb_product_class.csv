@@ -1,3 +1,3 @@
 id,product_id,sale_type_id,class_category_id1,class_category_id2,delivery_duration_id,creator_id,product_code,stock,stock_unlimited,sale_limit,price01,price02,delivery_fee,create_date,update_date,visible,currency_code,discriminator_type
-1,1,1,1,,,,bio,,1,,9000,9000,,2017-03-07 10:14:52,2017-03-07 10:14:52,1,JPY,productclass
-2,2,1,1,,,,scaramin,,1,,12000,12000,,2017-03-07 10:14:52,2017-03-07 10:14:52,1,JPY,productclass
+1,1,1,,,,,,,1,,,9000,,2017-03-07 10:14:52,2017-03-07 10:14:52,1,JPY,productclass
+2,2,1,,,,,,,1,,,12000,,2017-03-07 10:14:52,2017-03-07 10:14:52,1,JPY,productclass
